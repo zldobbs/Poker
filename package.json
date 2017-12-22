@@ -1,0 +1,10 @@
+{
+  "name": "Poker",
+  "version": "0.0.1",
+  "description": "Online poker application built with Angular and Socket",
+  "dependencies": {
+    "angular": "^1.6.6",
+    "express": "^4.15.2",
+    "socket.io": "^2.0.4"
+  }
+}
