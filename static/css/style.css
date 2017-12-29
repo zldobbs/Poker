@@ -1,3 +1,44 @@
-p {
-  color: red;
+/* sticky footer */
+body {
+  display: flex;
+  min-height: 100vh;
+  flex-direction: column;
+}
+
+main {
+  flex: 1 0 auto;
+}
+
+nav, .page-footer {
+  background-color: lightblue;
+}
+
+#fold, #call, #bet {
+  margin-left: 5px;
+  margin-right: 5px;
+}
+
+nav h3 {
+  padding: 0;
+  margin: 0;
+}
+
+nav {
+  padding-top: 10px;
+  padding-left: 10px;
+}
+
+#send-btn {
+  margin-top: 15px;
+}
+
+#table-row {
+  margin: 0 auto;
+  text-align: center;
+}
+
+#table {
+  margin-right: 15px;
+  margin-left: 15px;
+  display: inline;
 }

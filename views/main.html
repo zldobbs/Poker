@@ -3,12 +3,59 @@
   <head>
     <title>Poker</title>
     <meta charset="utf-8">
+    <!-- materialize -->
+    <link href="materialize-css/dist/css/materialize.min.css" rel="stylesheet" type="text/css"/>
     <!-- custom styles -->
     <link href="static/css/style.css" rel="stylesheet" type="text/css"/>
   </head>
 
   <body>
-    <p>poker time</p>
+    <header id="app-header">
+      <nav>
+        <h3>{{ message }}</h3>
+      </nav>
+    </header>
+
+    <main id="app-body">
+      <div id="table-row" class="row">
+        <h1 id="table" v-for="card in table">{{ card }}</h1>
+      </div>
+      <ul class="collection with-header">
+        <li class="collection-header">Player Hands</li>
+        <li class="collection-item" v-for="player in players">
+          {{ player.id }}: {{ player.c1 }},{{ player.c2 }}
+        </li>
+      </ul>
+      <div class="row">
+        <button id="gen" class="col push-s4 s4 btn waves-effect">Draw</button>
+      </div>
+    </main>
+
+    <footer id="app-footer" class="page-footer">
+      <div id="message-box" class="container">
+        <div class="row">
+          <button id="fold" class="btn waves-effect red col push-s1 s3">Fold</button>
+          <button id="call" class="btn waves-effect yellow black-text push-s1 col s3">Check</button>
+          <button id="bet" class="btn waves-effect green col push-s1 s3">Bet</button>
+        </div>
+        <div class="row">
+          <div class="input-field col s10">
+            <label for="typing-form">Send a message</label>
+            <input id="typing-form" name="typing-form" type="text"/>
+          </div>
+          <button id="send-btn" class="btn waves-effect col s2">Send</button>
+        </div>
+      </div>
+    </footer>
+    
+    <!-- jquery -->
+    <script src="jquery/dist/jquery.min.js"></script>
+    <!-- materialize js -->
+    <script src="materialize-css/dist/js/materialize.min.js"></script>
+    <!-- vue -->
+    <script src="vue/dist/vue.min.js"></script>
+    <!-- socket-io -->
+    <script src="/socket.io/socket.io.js"></script>
     <!-- controller link -->
     <script src="static/js/controller.js"></script>
   </body>
