@@ -1,8 +1,15 @@
+<!--
+  Poker Application
+  Zachary Dobbs
+  dobbszach@gmail.com
+  2018
+-->
 <!DOCTYPE html>
 <html>
   <head>
     <title>Poker</title>
     <meta charset="utf-8">
+    <!-- STYLESHEETS -->
     <!-- materialize -->
     <link href="materialize-css/dist/css/materialize.min.css" rel="stylesheet" type="text/css"/>
     <!-- custom styles -->
@@ -11,33 +18,64 @@
 
   <body>
     <header id="app-header">
+      <!-- header message -->
       <nav>
         <h3>{{ message }}</h3>
       </nav>
+      <!-- modal to get user nickname -->
+      <div id="name-modal" class="modal">
+        <div class="modal-content">
+          <p>Welcome to poker, what is your name?</p>
+        </div>
+        <div class="modal-footer">
+          <div class="row">
+            <div class="input-field col s10">
+              <label for="name-form">Send a message</label>
+              <input id="name-form" name="name-form" type="text" required/>
+            </div>
+            <button id="send-name" class="btn waves-effect col s2">Send</button>
+          </div>
+        </div>
+      </div>
     </header>
 
     <main id="app-body">
-      <div id="table-row" class="row">
-        <h1 id="table" v-for="card in table">{{ card }}</h1>
+      <!-- table cards -->
+      <div class="table-row row">
+        <div class="table" v-for="card in table">
+          <img :src="'static/img/cards/' + card + '.png'" class="playing-card" alt="card">
+        </div>
       </div>
-      <ul class="collection with-header">
-        <li class="collection-header">Player Hands</li>
-        <li class="collection-item" v-for="player in players">
-          {{ player.id }}: {{ player.c1 }},{{ player.c2 }}
-        </li>
-      </ul>
+      <!-- player's hands, don't show other users! -->
+      <div class="table-row row">
+        <div class="hand" v-for="player in players">
+          <p>{{ player.name }}</p>
+          <div class="hand-cards" id="personal-hand" v-if="player.id == id || state == 1">
+            <img :src="'static/img/cards/' + player.c1 + '.png'" class="playing-card" alt="card1">
+            <img :src="'static/img/cards/' + player.c2 + '.png'" class="playing-card" alt="card2">
+          </div>
+          <div class="hand-cards" v-else>
+            <img src="static/img/cards/purple_back.png" class="playing-card" alt="hidden-card">
+            <img src="static/img/cards/purple_back.png" class="playing-card" alt="hidden-card">
+          </div>
+        </div>
+      </div>
+      <!-- dealer button, change to display only for the dealer -->
       <div class="row">
         <button id="gen" class="col push-s4 s4 btn waves-effect">Draw</button>
       </div>
     </main>
 
     <footer id="app-footer" class="page-footer">
+      <!-- control box -->
       <div id="message-box" class="container">
+        <!-- action buttons, add functionality -->
         <div class="row">
           <button id="fold" class="btn waves-effect red col push-s1 s3">Fold</button>
           <button id="call" class="btn waves-effect yellow black-text push-s1 col s3">Check</button>
           <button id="bet" class="btn waves-effect green col push-s1 s3">Bet</button>
         </div>
+        <!-- chat box -->
         <div class="row">
           <div class="input-field col s10">
             <label for="typing-form">Send a message</label>
@@ -47,7 +85,8 @@
         </div>
       </div>
     </footer>
-    
+
+    <!-- SCRIPTS -->
     <!-- jquery -->
     <script src="jquery/dist/jquery.min.js"></script>
     <!-- materialize js -->

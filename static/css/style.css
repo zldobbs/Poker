@@ -1,4 +1,4 @@
-/* sticky footer */
+/* sticky footer config in body and main */
 body {
   display: flex;
   min-height: 100vh;
@@ -32,13 +32,44 @@ nav {
   margin-top: 15px;
 }
 
-#table-row {
+.table-row {
   margin: 0 auto;
+  margin-top: 15px;
   text-align: center;
+  overflow: scroll;
 }
 
-#table {
+.table {
   margin-right: 15px;
   margin-left: 15px;
   display: inline;
+}
+
+.playing-card {
+  width: 115.165px;
+  height: 176px;
+  display: inline-block;
+}
+
+.hand {
+  /* generated with the help of https://www.cssmatic.com/box-shadow */
+  -webkit-box-shadow: 3px 3px 3px 0px rgba(0,0,0,0.75);
+  -moz-box-shadow: 3px 3px 3px 0px rgba(0,0,0,0.75);
+  box-shadow: 3px 3px 3px 0px rgba(0,0,0,0.75);
+  background-color: black;
+  color: white;
+  width: 20%;
+  display: inline-block;
+  margin: 15px;
+}
+
+.hand-cards {
+  padding: 5px;
+  background-color: lightblue;
+  width: 100%;
+  border-top: 1px solid black;
+}
+
+#personal-hand {
+  background-color: goldenrod;
 }

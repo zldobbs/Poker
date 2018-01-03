@@ -20,12 +20,15 @@ app.get('/', function(req, res) {
 0 = pregame, no cards dealt
 1 = flop, 2 cards each player, 1 in burn pile, 3 on table
 2 = turn, 1 card burn, 1 card to table
-3 = river, 1 card burn, 1 card to table */
+3 = river, 1 card burn, 1 card to table
+4 = scoring, show all player cards */
 var state = 0;
 // create an array to hold the players and their cards
 var players = [];
-// create an array to hold the currently used cards
+// create an array to hold all currently used cards
 var usedCards = [];
+// create an array to hold the cards currently on the table
+var tableCards = [];
 // template var for a player
 var player = 0;
 
@@ -54,10 +57,17 @@ function drawCard() {
 // socket handling
 io.on('connection', function(socket) {
   // add a new player to the game on connection, remove on disconnect
-  player = {id: socket.id, c1: 0, c2: 0};
+  player = {id: socket.id, c1: 0, c2: 0, name: 'unbound'};
   players.push(player);
   console.log('new player -> ' + player['id']);
   console.log('current player count: ' + players.length);
+  if (tableCards.length > 0) {
+    // if the game has already started, send the table to the new user
+    socket.emit('draw cards', tableCards);
+    socket.broadcast.emit('draw cards', tableCards);
+  }
+  // assign the user's id
+  socket.emit('assign id', socket.id);
   socket.on('disconnect', function() {
     var index = -1;
     for (i = 0; i < players.length; i++) {
@@ -73,6 +83,15 @@ io.on('connection', function(socket) {
       players.splice(index, 1);
     }
   });
+
+  // set a user's nickname
+  socket.on('set name', function(name) {
+    for (i = 0; i < players.length; i++) {
+      if (socket.id == players[i].id) {
+        players[i].name = name;
+      }
+    }
+  });
   // broadcast message to all players
   socket.on('send message', function(msg) {
     // add some sort of session variable to keep track of users
@@ -86,30 +105,42 @@ io.on('connection', function(socket) {
       usedCards = [];
       // draw 2 cards for each player
       for (i = 0; i < players.length; i++) {
-        players[i].c1 = drawCard();
-        players[i].c2 = drawCard();
+        if (players[i].name) {
+          players[i].c1 = drawCard();
+          players[i].c2 = drawCard();
+        }
       }
       console.log(players);
       // send players dealt hands back to clients
       socket.emit('deal cards', players);
       socket.broadcast.emit('deal cards', players);
     }
-    // now dealer draw, first burn 1
-    drawCard();
-    var cards = [];
-    // draw 3 for the flop
-    if (state == 0)
-      for (i=0; i < 2; i++)
-        cards.push(drawCard());
-    cards.push(drawCard());
-    console.log('dealer draws -> ' + cards);
-    // send the drawn table cards back to clients
-    socket.emit('draw cards', cards);
-    socket.broadcast.emit('draw cards', cards);
+    if (state < 3) {
+      // now dealer draw, first burn 1
+      drawCard();
+      var cards = [];
+      // draw 3 for the flop
+      if (state == 0)
+        for (i=0; i < 2; i++)
+          cards.push(drawCard());
+      cards.push(drawCard());
+      console.log('dealer draws -> ' + cards);
+      for (i=0; i < cards.length; i++)
+        tableCards.push(cards[i]);
+      // send the drawn table cards back to clients
+      socket.emit('draw cards', tableCards);
+      socket.broadcast.emit('draw cards', tableCards);
+    }
+    else {
+      socket.emit('score game', players);
+      socket.broadcast.emit('score game', players);
+    }
     // bump state
     state++;
-    if (state >= 3)
+    if (state >= 4) {
       state = 0;
+      tableCards = [];
+    }
   });
 });
 
