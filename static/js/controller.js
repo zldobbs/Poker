@@ -31,8 +31,13 @@ $(function() {
   // allow the send button to be activated by pressing enter
   $('#name-modal').keyup(function(e) {
     if (e.keyCode == 13) {
-      $('#send-name').click();
-      return false;
+      if ($('#name-form').val().length === 0) {
+        Materialize.toast('Enter a name to continue!', 3000);
+      }
+      else {
+        $('#send-name').click();
+        return false;
+      }
     }
   });
 
@@ -41,7 +46,7 @@ $(function() {
     var streak = 0;
     var straight = 0;
     var highCard = 0;
-    cards.sort(function(a,b) { return a-b; });
+    cards.sort(function(a,b) {return a-b});
     for (i = 0; i < cards.length - 1; i++) {
       if ((cards[i]+1) == cards[i+1]) {
         streak++;
@@ -64,7 +69,7 @@ $(function() {
           }
         }
       }
-      else if (cards[i] != cards[i+1]) {
+      else if (cards[i]+1 != cards[i+1]) {
         streak = 0;
       }
     }
@@ -91,8 +96,8 @@ $(function() {
         cards13[i] = 13;
     }
     // sort both card arrays in ascending order
-    cards.sort(function(a,b) { return a-b; });
-    cards13.sort(function(a,b) { return a-b; });
+    cards.sort(function(a,b) {return a-b});
+    cards13.sort(function(a,b) {return a-b});
     console.log('cards = ' + cards);
     console.log('cards13 = ' + cards13);
     /* base score will be used to denote the hand the user has
@@ -177,7 +182,8 @@ $(function() {
             return score;
           }
           // if here, it's not a straight flush, but it is a Flush
-          score = {base: 6, data: c[c.length - 1]};
+          c.sort(function(a,b){return b-a});
+          score = {base: 6, data: c};
         }
       }
       else if (cards[i] <= 26) {
@@ -193,7 +199,8 @@ $(function() {
             score = {base: 9, data: straight.hc};
             return score;
           }
-          score = {base: 6, data: d[d.length - 1]};
+          d.sort(function(a,b){return b-a});
+          score = {base: 6, data: d};
         }
       }
       else if (cards[i] <= 39) {
@@ -209,7 +216,8 @@ $(function() {
             score = {base: 9, data: straight.hc};
             return score;
           }
-          score = {base: 6, data: h[h.length - 1]};
+          h.sort(function(a,b){return b-a});
+          score = {base: 6, data: h};
         }
       }
       else {
@@ -225,7 +233,8 @@ $(function() {
             score = {base: 9, data: straight.hc};
             return score;
           }
-          score = {base: 6, data: s[s.length - 1]};
+          s.sort(function(a,b){return b-a});
+          score = {base: 6, data: s};
         }
       }
     }
@@ -254,7 +263,7 @@ $(function() {
       if (pairs.length > 1) {
         // there are two pairs
         for (i = cards13.length - 1; i >=0; i--) {
-          if (cards13[i] != pairs[pairs.length - 1]) {
+          if (cards13[i] != pairs[pairs.length - 1] && cards13[i] != pairs[pairs.length - 2]) {
             score = {base: 3, data: [pairs[pairs.length - 1], pairs[pairs.length - 2], cards13[i]]};
             return score;
           }
@@ -308,17 +317,60 @@ $(function() {
   socket.on('score game', function(players) {
     // change this to reflect only players that are still betting
     appBody.state = 1;
+    var inc = 0;
     var max = 0;
-    var winner = 'none';
-    var scores = [];
+    var best;
+    var winner = [];
+    var best_aux = [];
+    // example test case for comparing two flushes
+    // appBody.table = [9, 1, 2, 3, 6];
+    // players[0].c1 = 11;
+    // players[0].c2 = 12;
+    // players[1].c1 = 4;
+    // players[1].c2 = 8;
     for (w = 0; w < players.length; w++) {
-      scores.push(score(players[w]));
-      console.log(players[w].name + ' -> ' + scores[w].base);
-      if (scores[w].base > max) {
-        max = scores[w].base;
-        winner = players[w].name;
+      players[w].score = score(players[w]);
+      console.log(players[w].name + ' -> ' + players[w].score.base);
+      if (players[w].score.base == max) {
+        winner.push(players[w]);
+      }
+      else if (players[w].score.base > max) {
+        winner = [];
+        winner.push(players[w]);
+        max = players[w].score.base;
       }
     }
-    appHeader.message = winner + ' wins the hand!';
+    best = winner[0];
+    // need to break ties now
+    if (winner.length > 1) {
+      for (i = 1; i < winner.length; i++) {
+        inc = 1;
+        j = 0;
+        while (j < best.score.data.length && inc == 1) {
+          if (best.score.data[j] < winner[i].score.data[j]) {
+            inc = 0;
+            best = winner[i];
+          }
+          else if (best.score.data[j] == winner[i].score.data[j]) {
+            if (j == best.score.data.length - 1) {
+              // found a tie
+              inc = 0;
+              best_aux.push(winner[i]);
+            }
+            j++;
+          }
+          else {
+            inc = 0;
+          }
+        }
+      }
+    }
+    if (best_aux.length > 0) {
+      // there is a tie
+      appHeader.message = 'There was a tie!';
+    }
+    else {
+      appHeader.message = best.name + ' wins the hand!';
+    }
   });
 });

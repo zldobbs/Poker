@@ -57,7 +57,15 @@ function drawCard() {
 // socket handling
 io.on('connection', function(socket) {
   // add a new player to the game on connection, remove on disconnect
-  player = {id: socket.id, c1: 0, c2: 0, name: 'unbound'};
+  player = {
+    id: socket.id,
+    c1: 0,
+    c2: 0,
+    name: 'unbound',
+    score: {
+      base: 0,
+      data: []
+    }};
   players.push(player);
   console.log('new player -> ' + player['id']);
   console.log('current player count: ' + players.length);
