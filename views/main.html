@@ -49,7 +49,9 @@
       <!-- player's hands, don't show other users! -->
       <div class="table-row row">
         <div class="hand" v-for="player in players">
+          <!-- make a better graphic for the dealer -->
           <p>{{ player.name }}</p>
+          <p v-if="player.id == dealer"><b>DEALER</b></p>
           <div class="hand-cards" id="personal-hand" v-if="player.id == id || state == 1">
             <img :src="'static/img/cards/' + player.c1 + '.png'" class="playing-card" alt="card1">
             <img :src="'static/img/cards/' + player.c2 + '.png'" class="playing-card" alt="card2">

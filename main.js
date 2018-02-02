@@ -31,6 +31,8 @@ var usedCards = [];
 var tableCards = [];
 // template var for a player
 var player = 0;
+// template var for the dealer
+var dealer = -1;
 
 // draw card function
 function drawCard() {
@@ -74,6 +76,7 @@ io.on('connection', function(socket) {
     socket.emit('draw cards', tableCards);
     socket.broadcast.emit('draw cards', tableCards);
   }
+
   // assign the user's id
   socket.emit('assign id', socket.id);
   socket.on('disconnect', function() {
@@ -100,6 +103,7 @@ io.on('connection', function(socket) {
       }
     }
   });
+
   // broadcast message to all players
   socket.on('send message', function(msg) {
     // add some sort of session variable to keep track of users
@@ -107,6 +111,7 @@ io.on('connection', function(socket) {
     socket.emit('send message', msg);
     socket.broadcast.emit('send message', msg);
   });
+
   // get cards for each player
   socket.on('get cards', function() {
     if (state == 0) {
@@ -118,10 +123,21 @@ io.on('connection', function(socket) {
           players[i].c2 = drawCard();
         }
       }
-      console.log(players);
       // send players dealt hands back to clients
       socket.emit('deal cards', players);
       socket.broadcast.emit('deal cards', players);
+      // assign the dealer
+      // check if it has been set yet, or if the dealer is at the end
+      if (dealer == -1 || dealer >= players.length-1) {
+        dealer = 0;
+      }
+      // right now not adding blinds.. consider adding later
+      else {
+        dealer++;
+      }
+      // send the dealer value to the table
+      socket.emit('assign dealer', dealer);
+      socket.broadcast.emit('assign dealer', dealer);
     }
     if (state < 3) {
       // now dealer draw, first burn 1

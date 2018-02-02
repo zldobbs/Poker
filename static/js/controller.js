@@ -16,6 +16,7 @@ $(function() {
     el: '#app-body',
     data: {
       state: 0,
+      dealer: 0,
       players: [],
       table: []
     }
@@ -43,20 +44,10 @@ $(function() {
     }
   });
 
-  // a lot of the communication is handled with these socket functions
-  socket.on('assign id', function(id) {
-    appBody.id = id;
-  });
-
   $('#send-btn').click(function() {
     // broadcasts a toast to all users, chat interface essentially
     socket.emit('send message', $('#typing-form').val());
     $('#typing-form').val('');
-  });
-
-  socket.on('send message', function(msg) {
-    // change color to coordinate to the current socket.id
-    Materialize.toast(msg, 5000);
   });
 
   $('#gen').click(function() {
@@ -64,15 +55,40 @@ $(function() {
     socket.emit('get cards');
   });
 
+  // a lot of the communication is handled with these socket functions
+  socket.on('assign id', function(id) {
+    appBody.id = id;
+  });
+
+  // recieve the dealer index value
+  socket.on('assign dealer', function(i) {
+    // find the correct player
+    console.log('dealer -> ' + i);
+    // loop to find the correct player
+    // var i = 0;
+    // for (appBody.player in appBody.players)
+    appBody.dealer = appBody.players[i].id;
+  });
+
+  // recieve the message a player sent
+  socket.on('send message', function(msg) {
+    // change color to coordinate to the current socket.id
+    Materialize.toast(msg, 5000);
+  });
+
+  // retrieve the cards dealt within main
   socket.on('deal cards', function(players) {
     appBody.players = players;
   });
 
+  // FIXME: this is where the game is starting...
+  // remove the functionality of the deal cards button
   socket.on('draw cards', function(cards) {
     appBody.state = 0;
     appBody.table = cards;
   });
 
+  // score the results of the game
   socket.on('score game', function(players) {
     // change this to reflect only players that are still betting
     appBody.state = 1;
