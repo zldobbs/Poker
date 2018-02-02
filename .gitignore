@@ -1,5 +1,6 @@
 # Files to ignore
 .DS_Store
 
-# Ignore the node_modules 
+# Ignore the node build data 
 node_modules/
+package-lock.json
