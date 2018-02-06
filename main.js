@@ -33,6 +33,8 @@ var tableCards = [];
 var player = 0;
 // template var for the dealer
 var dealer = -1;
+// template var for currPlayer
+var currPlayer = 0;
 
 // draw card function
 function drawCard() {
@@ -112,6 +114,33 @@ io.on('connection', function(socket) {
     socket.broadcast.emit('send message', msg);
   });
 
+  // handle a user play
+  socket.on('action', function(action) {
+    console.log('recieved action..');
+    switch(action) {
+      // fold
+      case 0:
+        console.log(players[currPlayer].id + ' folded');
+        break;
+      // call
+      case 1:
+        console.log(players[currPlayer].id + ' called');
+        break;
+      // bet
+      case 2:
+        console.log(currPlayer + ' bet');
+        break;
+      default:
+        console.log("Error on play function");
+        break;
+    }
+    currPlayer++;
+    if (currPlayer >= players.length-1) {
+      currPlayer = 0;
+    }
+    socket.emit('play', currPlayer);
+  });
+
   // get cards for each player
   socket.on('get cards', function() {
     if (state == 0) {
@@ -138,6 +167,14 @@ io.on('connection', function(socket) {
       // send the dealer value to the table
       socket.emit('assign dealer', dealer);
       socket.broadcast.emit('assign dealer', dealer);
+      // assign the current player value
+      currPlayer = dealer+1;
+      if (currPlayer >= players.length-1) {
+        currPlayer = 0;
+      }
+      // emit the current player
+      socket.emit('play', currPlayer);
+      socket.broadcast.emit('play', currPlayer);
     }
     if (state < 3) {
       // now dealer draw, first burn 1

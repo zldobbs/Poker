@@ -12,13 +12,16 @@ $(function() {
     }
   });
 
+  // FIXME consolidate all app components into one app..
   var appBody = new Vue({
     el: '#app-body',
     data: {
+      id: socket.id,
       state: 0,
       dealer: 0,
       players: [],
-      table: []
+      table: [],
+      turn: -1
     }
   });
 
@@ -55,6 +58,24 @@ $(function() {
     socket.emit('get cards');
   });
 
+  // handle fold button click
+  $('#fold').click(function() {
+    console.log('clicked fold');
+    socket.emit('action', 0);
+  });
+
+  // handle check/call button click
+  $('#call').click(function() {
+    console.log('clicked call');
+    socket.emit('action', 1);
+  });
+
+  // handle bet button click
+  $('#bet').click(function() {
+    console.log('clicked bet');
+    socket.emit('action', 2);
+  });
+
   // a lot of the communication is handled with these socket functions
   socket.on('assign id', function(id) {
     appBody.id = id;
@@ -64,14 +85,25 @@ $(function() {
   socket.on('assign dealer', function(i) {
     // find the correct player
     console.log('dealer -> ' + i);
-    // loop to find the correct player
-    // var i = 0;
-    // for (appBody.player in appBody.players)
     appBody.dealer = appBody.players[i].id;
+  });
+
+  // recieve the currPlayer index
+  socket.on('play', function(i) {
+    // find correct player
+    console.log('currPlayer -> ' + i);
+    appBody.turn = appBody.players[i].id;
+    // check if everyone has played
+    if (appBody.turn == appBody.dealer+1 || (appBody.turn == 0 && appBody.dealer == appBody.players.length-1)) {
+      socket.emit('get cards');
+    }
+    console.log('currPlayer ID = ' + appBody.turn);
+    console.log('my id = ' + appBody.id);
   });
 
   // recieve the message a player sent
   socket.on('send message', function(msg) {
+    // FIXME: send message when user presses enter
     // change color to coordinate to the current socket.id
     Materialize.toast(msg, 5000);
   });

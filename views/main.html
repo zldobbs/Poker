@@ -63,16 +63,16 @@
         </div>
       </div>
       <!-- dealer button, change to display only for the dealer -->
-      <div class="row">
+      <div class="row" v-if="turn == -1">
         <button id="gen" class="col push-s4 s4 btn waves-effect">Draw</button>
       </div>
-    </main>
+    <!-- </main> -->
 
-    <footer id="app-footer" class="page-footer">
+    <!-- <footer id="app-footer" class="page-footer"> -->
       <!-- control box -->
       <div id="message-box" class="container">
         <!-- action buttons, add functionality -->
-        <div class="row">
+        <div class="row" v-if="id == turn">
           <button id="fold" class="btn waves-effect red col push-s1 s3">Fold</button>
           <button id="call" class="btn waves-effect yellow black-text push-s1 col s3">Check</button>
           <button id="bet" class="btn waves-effect green col push-s1 s3">Bet</button>
@@ -86,7 +86,8 @@
           <button id="send-btn" class="btn waves-effect col s2">Send</button>
         </div>
       </div>
-    </footer>
+    <!-- </footer> -->
+  </main>
 
     <!-- SCRIPTS -->
     <!-- jquery -->
