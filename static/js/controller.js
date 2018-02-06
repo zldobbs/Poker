@@ -61,19 +61,19 @@ $(function() {
   // handle fold button click
   $('#fold').click(function() {
     console.log('clicked fold');
-    socket.emit('action', 0);
+    socket.emit('player action', 0);
   });
 
   // handle check/call button click
   $('#call').click(function() {
     console.log('clicked call');
-    socket.emit('action', 1);
+    socket.emit('player action', 1);
   });
 
   // handle bet button click
   $('#bet').click(function() {
     console.log('clicked bet');
-    socket.emit('action', 2);
+    socket.emit('player action', 2);
   });
 
   // a lot of the communication is handled with these socket functions
@@ -89,16 +89,14 @@ $(function() {
   });
 
   // recieve the currPlayer index
-  socket.on('play', function(i) {
+  socket.on('play', function(i, flag) {
     // find correct player
-    console.log('currPlayer -> ' + i);
     appBody.turn = appBody.players[i].id;
+    console.log('current player: index = ' + i + ", id = " + appBody.turn);
     // check if everyone has played
-    if (appBody.turn == appBody.dealer+1 || (appBody.turn == 0 && appBody.dealer == appBody.players.length-1)) {
+    if (flag) {
       socket.emit('get cards');
     }
-    console.log('currPlayer ID = ' + appBody.turn);
-    console.log('my id = ' + appBody.id);
   });
 
   // recieve the message a player sent
@@ -114,6 +112,7 @@ $(function() {
   });
 
   // FIXME: this is where the game is starting...
+  // implement some better game flow 
   // remove the functionality of the deal cards button
   socket.on('draw cards', function(cards) {
     appBody.state = 0;

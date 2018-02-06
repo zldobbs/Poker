@@ -52,6 +52,8 @@
           <!-- make a better graphic for the dealer -->
           <p>{{ player.name }}</p>
           <p v-if="player.id == dealer"><b>DEALER</b></p>
+          <p v-if="player.id == turn"><i>Playing</i></p>
+          <p v-else>Waiting...</p>
           <div class="hand-cards" id="personal-hand" v-if="player.id == id || state == 1">
             <img :src="'static/img/cards/' + player.c1 + '.png'" class="playing-card" alt="card1">
             <img :src="'static/img/cards/' + player.c2 + '.png'" class="playing-card" alt="card2">
@@ -67,12 +69,11 @@
         <button id="gen" class="col push-s4 s4 btn waves-effect">Draw</button>
       </div>
     <!-- </main> -->
-
     <!-- <footer id="app-footer" class="page-footer"> -->
       <!-- control box -->
       <div id="message-box" class="container">
         <!-- action buttons, add functionality -->
-        <div class="row" v-if="id == turn">
+        <div class="row">
           <button id="fold" class="btn waves-effect red col push-s1 s3">Fold</button>
           <button id="call" class="btn waves-effect yellow black-text push-s1 col s3">Check</button>
           <button id="bet" class="btn waves-effect green col push-s1 s3">Bet</button>
@@ -87,7 +88,7 @@
         </div>
       </div>
     <!-- </footer> -->
-  </main>
+    </main>
 
     <!-- SCRIPTS -->
     <!-- jquery -->

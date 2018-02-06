@@ -115,8 +115,11 @@ io.on('connection', function(socket) {
   });
 
   // handle a user play
-  socket.on('action', function(action) {
+  socket.on('player action', function(action) {
     console.log('recieved action..');
+    if (socket.id != players[currPlayer].id) {
+      action = -1;
+    }
     switch(action) {
       // fold
       case 0:
@@ -128,17 +131,26 @@ io.on('connection', function(socket) {
         break;
       // bet
       case 2:
-        console.log(currPlayer + ' bet');
+        console.log(players[currPlayer].id + ' bet');
         break;
       default:
         console.log("Error on play function");
-        break;
+        return 0;
     }
+    var flag = false;
+    if (currPlayer == dealer) {
+      flag = true;
+    }
+    // bump player
     currPlayer++;
-    if (currPlayer >= players.length-1) {
+    // check if player is at the end of the array
+    if (currPlayer > players.length-1) {
       currPlayer = 0;
     }
-    socket.emit('play', currPlayer);
+    // send the currPlayer back with the trigger flag setting 
+    socket.emit('play', currPlayer, flag);
+    // broadcast updated player to all, but don't let get cards get called
+    socket.broadcast.emit('play', currPlayer, false);
   });
 
   // get cards for each player
@@ -169,12 +181,12 @@ io.on('connection', function(socket) {
       socket.broadcast.emit('assign dealer', dealer);
       // assign the current player value
       currPlayer = dealer+1;
-      if (currPlayer >= players.length-1) {
+      if (currPlayer > players.length-1) {
         currPlayer = 0;
       }
       // emit the current player
-      socket.emit('play', currPlayer);
-      socket.broadcast.emit('play', currPlayer);
+      socket.emit('play', currPlayer, false);
+      socket.broadcast.emit('play', currPlayer, false);
     }
     if (state < 3) {
       // now dealer draw, first burn 1
