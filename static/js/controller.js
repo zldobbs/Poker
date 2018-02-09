@@ -112,7 +112,7 @@ $(function() {
   });
 
   // FIXME: this is where the game is starting...
-  // implement some better game flow 
+  // implement some better game flow
   // remove the functionality of the deal cards button
   socket.on('draw cards', function(cards) {
     appBody.state = 0;
@@ -158,5 +158,11 @@ $(function() {
     else {
       appHeader.message = best[0].name + ' wins the hand!';
     }
+    // pause a few seconds before dealing new hand
+    // only call if the user is the dealer, prevent multiple calls
+    setTimeout(function() {
+      if (appBody.id == appBody.dealer)
+        socket.emit('get cards');
+    }, 5000);
   });
 });
