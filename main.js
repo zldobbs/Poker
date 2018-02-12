@@ -61,8 +61,11 @@ function drawCard() {
 // socket handling
 io.on('connection', function(socket) {
   // add a new player to the game on connection, remove on disconnect
+  // FIXME redesign architecture to make this more OOP.....
   player = {
     id: socket.id,
+    money: 1000,
+    bet: 0,
     c1: 0,
     c2: 0,
     name: 'unbound',
@@ -147,7 +150,7 @@ io.on('connection', function(socket) {
     if (currPlayer > players.length-1) {
       currPlayer = 0;
     }
-    // send the currPlayer back with the trigger flag setting 
+    // send the currPlayer back with the trigger flag setting
     socket.emit('play', currPlayer, flag);
     // broadcast updated player to all, but don't let get cards get called
     socket.broadcast.emit('play', currPlayer, false);

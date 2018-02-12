@@ -21,6 +21,7 @@ $(function() {
       dealer: 0,
       players: [],
       table: [],
+      bet: 0,
       turn: -1
     }
   });
@@ -97,6 +98,13 @@ $(function() {
     if (flag) {
       socket.emit('get cards');
     }
+    // update button display
+    if (appBody.turn == appBody.id && appBody.state != -1) {
+      $('#button-box').show();
+    }
+    else {
+      $('#button-box').hide();
+    }
   });
 
   // recieve the message a player sent
@@ -158,11 +166,17 @@ $(function() {
     else {
       appHeader.message = best[0].name + ' wins the hand!';
     }
+    // hide the buttons so noone can act while winning hand is shown 
+    $('#button-box').hide();
+    var tempTurn = appBody.turn;
+    appBody.turn = -2;
     // pause a few seconds before dealing new hand
     // only call if the user is the dealer, prevent multiple calls
     setTimeout(function() {
-      if (appBody.id == appBody.dealer)
+      appBody.turn = tempTurn;
+      if (appBody.id == appBody.dealer) {
         socket.emit('get cards');
+      }
     }, 5000);
   });
 });

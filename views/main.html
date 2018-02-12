@@ -46,12 +46,18 @@
           <img :src="'static/img/cards/' + card + '.png'" class="playing-card" alt="card">
         </div>
       </div>
+      <div class="row">
+        <div class="col s12 push-m3 m6 center">
+          <h4>Current Bet: ${{ bet }}</h4>
+        </div>
+      </div>
       <!-- player's hands, don't show other users! -->
       <div class="table-row row">
         <div class="hand" v-for="player in players">
           <!-- make a better graphic for the dealer -->
-          <p>{{ player.name }}</p>
-          <p v-if="player.id == dealer"><b>DEALER</b></p>
+          <p v-if="player.id == dealer" class="yellow-text"><b>{{ player.name }}</b></p>
+          <p v-else>{{ player.name }}</p>
+          <p>${{ player.money }} <span class="red-text">Bet: ${{ player.bet }}</span></p>
           <p v-if="player.id == turn"><i>Playing</i></p>
           <p v-else>Waiting...</p>
           <div class="hand-cards" id="personal-hand" v-if="player.id == id || state == 1">
@@ -73,7 +79,7 @@
       <!-- control box -->
       <div id="message-box" class="container">
         <!-- action buttons, add functionality -->
-        <div class="row">
+        <div id="button-box" class="row">
           <button id="fold" class="btn waves-effect red col push-s1 s3">Fold</button>
           <button id="call" class="btn waves-effect yellow black-text push-s1 col s3">Check/Call</button>
           <button id="bet" class="btn waves-effect green col push-s1 s3">Bet/Raise</button>
