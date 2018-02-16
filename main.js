@@ -43,7 +43,7 @@ var dealer = -1;
 // template var for currPlayer
 var currPlayer = 0;
 // current bet on the table
-var bet = 0;
+var bet = 100;
 
 // draw card function
 function drawCard() {
@@ -70,7 +70,8 @@ function drawCard() {
 // socket handling
 io.on('connection', function(socket) {
   // add a new player to the game on connection, remove on disconnect
-  // FIXME redesign architecture to make this more OOP.....
+  // FIXME better handling of joining a game in session, perhaps LOBBY VIEW?
+  // FIXME redesign architecture to make this more OOP (table and player objects)
   player = {
     id: socket.id,
     money: 1000,
@@ -203,6 +204,8 @@ io.on('connection', function(socket) {
       // reset state of table
       socket.emit('draw cards', tableCards);
       socket.broadcast.emit('draw cards', tableCards);
+      // update the bet on the table
+      bet = 100;
     }
     else if (state < 4) {
       // now dealer draw, first burn 1
@@ -219,12 +222,15 @@ io.on('connection', function(socket) {
       // send the drawn table cards back to clients
       socket.emit('draw cards', tableCards);
       socket.broadcast.emit('draw cards', tableCards);
+      bet = 0;
     }
     else {
       console.log('scoring game');
       socket.emit('score game', players);
       socket.broadcast.emit('score game', players);
     }
+    socket.emit('update bet', bet);
+    socket.broadcast.emit('update bet', bet);
     // bump state
     state++;
     console.log('state ' + state);
