@@ -1,5 +1,7 @@
 $(function() {
 
+  // FIXME: add extensive error handling including parameter validation
+
   console.log('Poker app by Zach Dobbs');
   // sockets
   var socket = io();
@@ -107,6 +109,11 @@ $(function() {
     }
   });
 
+  socket.on('update bet', function(bet) {
+    // update the current bet amount
+    appBody.bet = bet;
+  });
+
   // recieve the message a player sent
   socket.on('send message', function(msg) {
     // FIXME: send message when user presses enter
@@ -115,13 +122,13 @@ $(function() {
   });
 
   // retrieve the cards dealt within main
-  socket.on('deal cards', function(players) {
+  socket.on('update players', function(players) {
     appBody.players = players;
   });
 
   // FIXME: this is where the game is starting...
   // implement some better game flow
-  // remove the functionality of the deal cards button
+  // remove the functionality of the draw button
   socket.on('draw cards', function(cards) {
     appBody.state = 0;
     appBody.table = cards;
@@ -166,7 +173,7 @@ $(function() {
     else {
       appHeader.message = best[0].name + ' wins the hand!';
     }
-    // hide the buttons so noone can act while winning hand is shown 
+    // hide the buttons so noone can act while winning hand is shown
     $('#button-box').hide();
     var tempTurn = appBody.turn;
     appBody.turn = -2;

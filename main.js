@@ -15,13 +15,20 @@ app.get('/', function(req, res) {
   res.sendFile(__dirname + '/views/main.html');
 });
 
-// GLOBAL VARIABLES
-/* create a state variable to keep track of the current location of the game
+/*
+GLOBAL VARIABLES
+ FIXME really shouldn't be using global vars.. cleaning this up would take a while
+ ^ to solve, perhaps create two objects, player and table...
+*/
+
+/*
+create a state variable to keep track of the current location of the game
 0 = pregame, no cards dealt
 1 = flop, 2 cards each player, 1 in burn pile, 3 on table
 2 = turn, 1 card burn, 1 card to table
 3 = river, 1 card burn, 1 card to table
-4 = scoring, show all player cards */
+4 = scoring, show all player cards
+*/
 var state = 0;
 // create an array to hold the players and their cards
 var players = [];
@@ -35,6 +42,8 @@ var player = 0;
 var dealer = -1;
 // template var for currPlayer
 var currPlayer = 0;
+// current bet on the table
+var bet = 0;
 
 // draw card function
 function drawCard() {
@@ -84,6 +93,7 @@ io.on('connection', function(socket) {
 
   // assign the user's id
   socket.emit('assign id', socket.id);
+
   socket.on('disconnect', function() {
     var index = -1;
     for (i = 0; i < players.length; i++) {
@@ -167,9 +177,9 @@ io.on('connection', function(socket) {
           players[i].c2 = drawCard();
         }
       }
-      // send players dealt hands back to clients
-      socket.emit('deal cards', players);
-      socket.broadcast.emit('deal cards', players);
+      // send the current players array
+      socket.emit('update players', players);
+      socket.broadcast.emit('update players', players);
       // assign the dealer
       // check if it has been set yet, or if the dealer is at the end
       if (dealer == -1 || dealer >= players.length-1) {
@@ -190,13 +200,16 @@ io.on('connection', function(socket) {
       // emit the current player
       socket.emit('play', currPlayer, false);
       socket.broadcast.emit('play', currPlayer, false);
+      // reset state of table
+      socket.emit('draw cards', tableCards);
+      socket.broadcast.emit('draw cards', tableCards);
     }
-    if (state < 3) {
+    else if (state < 4) {
       // now dealer draw, first burn 1
       drawCard();
       var cards = [];
       // draw 3 for the flop
-      if (state == 0)
+      if (state == 1)
         for (i=0; i < 2; i++)
           cards.push(drawCard());
       cards.push(drawCard());
@@ -208,12 +221,14 @@ io.on('connection', function(socket) {
       socket.broadcast.emit('draw cards', tableCards);
     }
     else {
+      console.log('scoring game');
       socket.emit('score game', players);
       socket.broadcast.emit('score game', players);
     }
     // bump state
     state++;
-    if (state >= 4) {
+    console.log('state ' + state);
+    if (state > 4) {
       state = 0;
       tableCards = [];
     }
