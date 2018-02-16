@@ -1,7 +1,7 @@
 # Poker
 A poker game built with [socket-io](https://socket.io) and [Vue](https://vuejs.org)
 ## Usage
-To run, clone and rune node main.js
+To run, clone and rune `node main.js`
 ## Planned Implementations
 * Implement the betting process
   * Functions for fold, check/call, bet/raise
