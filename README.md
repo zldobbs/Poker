@@ -4,12 +4,12 @@ A poker game built with [socket-io](https://socket.io) and [Vue](https://vuejs.o
 To run, clone and rune node main.js
 ## Planned Implementations
 * Implement the betting process
-⋅⋅* Functions for fold, check/call, bet/raise
+  * Functions for fold, check/call, bet/raise
 * Improve UI and responsive design
-⋅⋅* Considering dark theme?
-⋅⋅* Need to create a new view for holding waiting players
+  * Considering dark theme?
+  * Need to create a new view for holding waiting players
 * Implement MongoDB database
-⋅⋅* utilize authentication
+  * utilize authentication
 * Host online for all to play and enjoy!
 ## Known Issues
 Reflecting on this code base, I realize that my implementation has many flaws that could be improved upon. Namely the use of global variables should be scrapped for a better implementation of MVC and OOP concepts. I plan on someday revisiting the underlying architecture to create two objects TABLE and PLAYER.
