@@ -32,6 +32,9 @@ create a state variable to keep track of the current location of the game
 var state = 0;
 // create an array to hold the players and their cards
 var players = [];
+// another array for players that have folded
+var foldedPlayers = [];
+// merge these arrays at state 0
 // create an array to hold all currently used cards
 var usedCards = [];
 // create an array to hold the cards currently on the table
@@ -130,7 +133,7 @@ io.on('connection', function(socket) {
 
   // handle a user play
   socket.on('player action', function(action) {
-    console.log('recieved action..');
+    console.log('recieved action.. curr = ' + players[currPlayer]);
     if (socket.id != players[currPlayer].id) {
       action = -1;
     }
@@ -138,6 +141,17 @@ io.on('connection', function(socket) {
       // fold
       case 0:
         console.log(players[currPlayer].id + ' folded');
+        foldedPlayers.push({index: currPlayer, player: players[currPlayer]});
+        players.splice(currPlayer, 1);
+        console.log(foldedPlayers);
+        if (players.length == 1) {
+          socket.emit('score game', players);
+          socket.broadcast.emit('score game', players);
+          state = 0;
+          tableCards = [];
+        }
+        socket.emit('update players', players);
+        socket.broadcast.emit('update players', players);
         break;
       // call
       case 1:
@@ -170,6 +184,13 @@ io.on('connection', function(socket) {
   // get cards for each player
   socket.on('get cards', function() {
     if (state == 0) {
+      // merge the currPlayer and foldedPlayers arrays
+      // maintain order...
+      while (foldedPlayers.length > 0) {
+        players.splice(foldedPlayers[0].index, 0, foldedPlayers[0].player);
+        foldedPlayers.splice(0, 1);
+        console.log(foldedPlayers);
+      }
       usedCards = [];
       // draw 2 cards for each player
       for (i = 0; i < players.length; i++) {
