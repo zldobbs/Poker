@@ -1,6 +1,7 @@
 # Poker
 A poker game built with [socket-io](https://socket.io) and [Vue](https://vuejs.org)
 ## Usage
+Requires [Node.js](https://nodejs.org/)
 `node main.js`
 ## Planned Implementations
 * Implement the betting process
