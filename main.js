@@ -43,6 +43,8 @@ var tableCards = [];
 var player = 0;
 // template var for the dealer
 var dealer = -1;
+// need a counter to keep track of player moves
+var count = 0;
 // template var for currPlayer
 var currPlayer = 0;
 // current bet on the table
@@ -133,23 +135,37 @@ io.on('connection', function(socket) {
 
   // handle a user play
   socket.on('player action', function(action) {
-    console.log('recieved action.. curr = ' + players[currPlayer]);
+    console.log('recieved action.. curr = ' + currPlayer + ', action = ' + action);
     if (socket.id != players[currPlayer].id) {
       action = -1;
     }
     switch(action) {
       // fold
+      // FIXME: major issues being encountered with the flow of the game...
+      // make sure the correct current player is actually playing
+      // draw it out!!
       case 0:
-        console.log(players[currPlayer].id + ' folded');
         foldedPlayers.push({index: currPlayer, player: players[currPlayer]});
         players.splice(currPlayer, 1);
-        console.log(foldedPlayers);
+        // check if the player that folded is the dealer
+        if (currPlayer == dealer) {
+          if (dealer >= players.length-1) {
+            socket.emit('assign dealer', 0);
+            socket.broadcast.emit('assign dealer', 0);
+          }
+          else {
+            socket.emit('assign dealer', dealer+1);
+            socket.broadcast.emit('assign dealer', dealer+1);
+          }
+        }
         if (players.length == 1) {
-          socket.emit('score game', players);
-          socket.broadcast.emit('score game', players);
           state = 0;
           tableCards = [];
+          socket.emit('score game', players);
+          socket.broadcast.emit('score game', players);
         }
+        currPlayer--;
+        count--;
         socket.emit('update players', players);
         socket.broadcast.emit('update players', players);
         break;
@@ -165,9 +181,11 @@ io.on('connection', function(socket) {
         console.log("Error on play function");
         return 0;
     }
+    count++;
     var flag = false;
-    if (currPlayer == dealer) {
+    if (count >= players.length && players.length > 1) {
       flag = true;
+      count = 0;
     }
     // bump player
     currPlayer++;
@@ -187,11 +205,11 @@ io.on('connection', function(socket) {
       // merge the currPlayer and foldedPlayers arrays
       // maintain order...
       while (foldedPlayers.length > 0) {
-        players.splice(foldedPlayers[0].index, 0, foldedPlayers[0].player);
-        foldedPlayers.splice(0, 1);
-        console.log(foldedPlayers);
+        players.splice(foldedPlayers[foldedPlayers.length-1].index, 0, foldedPlayers[foldedPlayers.length-1].player);
+        foldedPlayers.splice(foldedPlayers.length-1, 1);
       }
       usedCards = [];
+      count = 0;
       // draw 2 cards for each player
       for (i = 0; i < players.length; i++) {
         if (players[i].name) {

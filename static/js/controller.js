@@ -63,19 +63,16 @@ $(function() {
 
   // handle fold button click
   $('#fold').click(function() {
-    console.log('clicked fold');
     socket.emit('player action', 0);
   });
 
   // handle check/call button click
   $('#call').click(function() {
-    console.log('clicked call');
     socket.emit('player action', 1);
   });
 
   // handle bet button click
   $('#bet').click(function() {
-    console.log('clicked bet');
     socket.emit('player action', 2);
   });
 
@@ -101,7 +98,7 @@ $(function() {
       socket.emit('get cards');
     }
     // update button display
-    if (appBody.turn == appBody.id && appBody.state != -1) {
+    if (appBody.turn == appBody.id && appBody.state == 0) {
       $('#button-box').show();
     }
     else {
@@ -181,6 +178,7 @@ $(function() {
     // only call if the user is the dealer, prevent multiple calls
     setTimeout(function() {
       appBody.turn = tempTurn;
+      appBody.state = 0;
       if (appBody.id == appBody.dealer) {
         socket.emit('get cards');
       }
