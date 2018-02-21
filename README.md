@@ -1,8 +1,11 @@
 # Poker
 A poker game built with [socket-io](https://socket.io) and [Vue](https://vuejs.org)
+
 ## Usage
 Requires [Node.js](https://nodejs.org/)
+
 `node main.js`
+
 ## Planned Implementations
 * Implement the betting process
   * Functions for fold, check/call, bet/raise
@@ -12,6 +15,7 @@ Requires [Node.js](https://nodejs.org/)
 * Implement MongoDB database
   * utilize authentication
 * Host online for all to play and enjoy!
+
 ## Known Issues
 Reflecting on this code base, I realize that my implementation has many flaws that could be improved upon. Namely the use of global variables should be scrapped for a better implementation of MVC and OOP concepts. I plan on someday revisiting the underlying architecture to create two objects TABLE and PLAYER.
 
