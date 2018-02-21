@@ -49,6 +49,8 @@ var count = 0;
 var currPlayer = 0;
 // current bet on the table
 var bet = 100;
+// table total from all current bets
+var table = 0;
 
 // draw card function
 function drawCard() {
@@ -134,16 +136,13 @@ io.on('connection', function(socket) {
   });
 
   // handle a user play
-  socket.on('player action', function(action) {
-    console.log('recieved action.. curr = ' + currPlayer + ', action = ' + action);
+  socket.on('player action', function(action, data) {
+    console.log('recieved action.. curr = ' + players[currPlayer].name + ', action = ' + action + ', data =' + data);
     if (socket.id != players[currPlayer].id) {
       action = -1;
     }
     switch(action) {
       // fold
-      // FIXME: major issues being encountered with the flow of the game...
-      // make sure the correct current player is actually playing
-      // draw it out!!
       case 0:
         foldedPlayers.push({index: currPlayer, player: players[currPlayer]});
         players.splice(currPlayer, 1);
@@ -158,37 +157,59 @@ io.on('connection', function(socket) {
             socket.broadcast.emit('assign dealer', dealer+1);
           }
         }
+        // check if there is only one player left at the table now
         if (players.length == 1) {
           state = 0;
           tableCards = [];
           socket.emit('score game', players);
           socket.broadcast.emit('score game', players);
         }
-        currPlayer--;
-        count--;
-        socket.emit('update players', players);
-        socket.broadcast.emit('update players', players);
         break;
       // call
       case 1:
-        console.log(players[currPlayer].id + ' called');
-        break;
       // bet
       case 2:
-        console.log(players[currPlayer].id + ' bet');
+        // check if the user has already bet this round
+        if (players[currPlayer].bet > 0) {
+          // adding the bet amount essentially erases the bet that already happened
+          players[currPlayer].money += players[currPlayer].bet;
+        }
+        // subtract the bet amount from the players cash stack
+        players[currPlayer].money -= data;
+        // make sure the user had enough money for that bet
+        if (players[currPlayer].money < 0) {
+          console.log('Error! ' + players[currPlayer].name + ' bet more than allowed');
+          console.log('bet = ' + data + ', new funds = ' + players[currPlayer].money);
+          return 0;
+        }
+        // update user's bet
+        players[currPlayer].bet = data;
+        // update the tables bet amount
+        table += data;
+        bet = data;
+        socket.emit('update bet', bet, table);
+        socket.broadcast.emit('update bet', bet, table);
+        count++;
+        currPlayer++;
         break;
       default:
         console.log("Error on play function");
         return 0;
     }
-    count++;
+    // send updated player states
+    socket.emit('update players', players);
+    socket.broadcast.emit('update players', players);
+    // if the user raised, set the count to 1 so all other players get a chance to play
+    if (action == 2) {
+      count = 1;
+    }
     var flag = false;
     if (count >= players.length && players.length > 1) {
       flag = true;
       count = 0;
     }
     // bump player
-    currPlayer++;
+    // currPlayer++;
     // check if player is at the end of the array
     if (currPlayer > players.length-1) {
       currPlayer = 0;
@@ -201,6 +222,10 @@ io.on('connection', function(socket) {
 
   // get cards for each player
   socket.on('get cards', function() {
+    // reset players bets
+    for (i = 0; i < players.length; i++) {
+      players[i].bet = 0;
+    }
     if (state == 0) {
       // merge the currPlayer and foldedPlayers arrays
       // maintain order...
@@ -210,7 +235,7 @@ io.on('connection', function(socket) {
       }
       usedCards = [];
       count = 0;
-      // draw 2 cards for each player
+      // draw 2 cards for each player and reset any outstanding bets
       for (i = 0; i < players.length; i++) {
         if (players[i].name) {
           players[i].c1 = drawCard();
@@ -251,9 +276,10 @@ io.on('connection', function(socket) {
       drawCard();
       var cards = [];
       // draw 3 for the flop
-      if (state == 1)
+      if (state == 1) {
         for (i=0; i < 2; i++)
           cards.push(drawCard());
+      }
       cards.push(drawCard());
       console.log('dealer draws -> ' + cards);
       for (i=0; i < cards.length; i++)
@@ -268,8 +294,8 @@ io.on('connection', function(socket) {
       socket.emit('score game', players);
       socket.broadcast.emit('score game', players);
     }
-    socket.emit('update bet', bet);
-    socket.broadcast.emit('update bet', bet);
+    socket.emit('update bet', bet, table);
+    socket.broadcast.emit('update bet', bet, table);
     // bump state
     state++;
     console.log('state ' + state);
@@ -278,6 +304,23 @@ io.on('connection', function(socket) {
       tableCards = [];
     }
   });
+
+  // handle the winner(s) of the game
+  socket.on('award', function(winners) {
+    var i, j;
+    // could be multiple winners
+    for (i = 0; i < players.length; i++) {
+      for (j = 0; j < winners.length; j++) {
+        if (players[i].id == winners[j].id) {
+          players[i].money += (table/winners.length);
+          break;
+        }
+      }
+    }
+    table = 0;
+    bet = 0;
+  });
+
 });
 
 // serve the app

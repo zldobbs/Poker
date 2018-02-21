@@ -23,6 +23,7 @@ $(function() {
       dealer: 0,
       players: [],
       table: [],
+      tableTotal: 0,
       bet: 0,
       turn: -1
     }
@@ -63,17 +64,19 @@ $(function() {
 
   // handle fold button click
   $('#fold').click(function() {
-    socket.emit('player action', 0);
+    socket.emit('player action', 0, 0);
   });
 
   // handle check/call button click
   $('#call').click(function() {
-    socket.emit('player action', 1);
+    socket.emit('player action', 1, appBody.bet);
   });
 
   // handle bet button click
   $('#bet').click(function() {
-    socket.emit('player action', 2);
+    // FIXME change second parameter to the new bet
+    // validate before emitting
+    socket.emit('player action', 2, appBody.bet+100);
   });
 
   // a lot of the communication is handled with these socket functions
@@ -106,9 +109,10 @@ $(function() {
     }
   });
 
-  socket.on('update bet', function(bet) {
+  socket.on('update bet', function(bet, table) {
     // update the current bet amount
     appBody.bet = bet;
+    appBody.tableTotal = table;
   });
 
   // recieve the message a player sent
@@ -170,6 +174,8 @@ $(function() {
     else {
       appHeader.message = best[0].name + ' wins the hand!';
     }
+    // send the winner(s)
+    socket.emit('award', best);
     // hide the buttons so noone can act while winning hand is shown
     $('#button-box').hide();
     var tempTurn = appBody.turn;
