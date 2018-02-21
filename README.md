@@ -17,6 +17,8 @@ Requires [Node.js](https://nodejs.org/)
 * Host online for all to play and enjoy!
 
 ## Known Issues
-Reflecting on this code base, I realize that my implementation has many flaws that could be improved upon. Namely the use of global variables should be scrapped for a better implementation of MVC and OOP concepts. I plan on someday revisiting the underlying architecture to create two objects TABLE and PLAYER.
-
-The MVC architecture I currently have implemented is alright, but could definitely be more consistent and efficient. The file controller.js is the controller that communicates between the model (main.js) and the view (main.html - at this point in time).
+The current flow has a lot of bugs that need to be addressed. After developing a minimal viable product, I plan on looking into some of the following aspects of this project.
+* Implement more efficient error-checking/handling
+* Implement unit tests
+* Redesign architecture to remove global variables and improve encapsulation principles
+* Improve application security 
