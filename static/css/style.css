@@ -1,8 +1,15 @@
 /* sticky footer config in body and main */
+/*
+  dark-gray: #292727
+  light-blue: #D1E0EB
+  dark-blue: #0a5994
+*/
 body {
   display: flex;
   min-height: 100vh;
   flex-direction: column;
+  background-color: #292727;
+  color: #D1E0EB;
 }
 
 main {
@@ -10,7 +17,7 @@ main {
 }
 
 nav, .page-footer {
-  background-color: lightblue;
+  background-color: #0a5994;
 }
 
 #fold, #call, #bet {
@@ -26,6 +33,10 @@ nav h3 {
 nav {
   padding-top: 10px;
   padding-left: 10px;
+}
+
+#name-modal {
+  color: black;
 }
 
 #send-btn {
