@@ -131,8 +131,12 @@ io.on('connection', function(socket) {
   socket.on('send message', function(msg) {
     // add some sort of session variable to keep track of users
     console.log(socket.id + " is sending " + msg);
-    socket.emit('send message', msg);
-    socket.broadcast.emit('send message', msg);
+    for (i = 0; i < players.length; i++) {
+      if (players[i].id == socket.id) {
+        socket.emit('send message', players[i].name + ': ' + msg);
+        socket.broadcast.emit('send message', players[i].name + ': ' + msg);
+      }
+    }
   });
 
   // handle a user play

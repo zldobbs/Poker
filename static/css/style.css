@@ -4,6 +4,7 @@
   light-blue: #D1E0EB
   dark-blue: #0a5994
 */
+
 body {
   display: flex;
   min-height: 100vh;
@@ -83,4 +84,8 @@ nav {
 
 #personal-hand {
   background-color: goldenrod;
+}
+
+.color-toast {
+  background-color: #0a5994;
 }

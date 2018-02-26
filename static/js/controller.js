@@ -45,6 +45,7 @@ $(function() {
         Materialize.toast('Enter a name to continue!', 3000);
       }
       else {
+        $('#send-btn').click();
         $('#send-name').click();
         return false;
       }
@@ -53,8 +54,10 @@ $(function() {
 
   $('#send-btn').click(function() {
     // broadcasts a toast to all users, chat interface essentially
-    socket.emit('send message', $('#typing-form').val());
-    $('#typing-form').val('');
+    if ($('#typing-form').val().length > 0) {
+      socket.emit('send message', $('#typing-form').val());
+      $('#typing-form').val('');
+    }
   });
 
   $('#gen').click(function() {
@@ -119,7 +122,7 @@ $(function() {
   socket.on('send message', function(msg) {
     // FIXME: send message when user presses enter
     // change color to coordinate to the current socket.id
-    Materialize.toast(msg, 5000);
+    Materialize.toast(msg, 5000, 'color-toast');
   });
 
   // retrieve the cards dealt within main
