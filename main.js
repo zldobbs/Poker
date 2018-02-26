@@ -210,6 +210,7 @@ io.on('connection', function(socket) {
     var flag = false;
     if (count >= players.length && players.length > 1) {
       flag = true;
+      currPlayer = dealer;
       count = 0;
     }
     // bump player

@@ -38,18 +38,20 @@ $(function() {
     $('#name-modal').modal('close');
   });
   // allow the send button to be activated by pressing enter
-  $(document).keyup(function(e) {
-    e.preventDefault();
-    if (e.keyCode == 13) {
-      if ($('#name-form').val().length === 0) {
-        Materialize.toast('Enter a name to continue!', 3000);
+  $(document).ready(function() {
+    $(document).keyup(function(e) {
+      e.preventDefault();
+      if (e.keyCode == 13) {
+        if ($('#name-form').val().length === 0) {
+          Materialize.toast('Enter a name to continue!', 3000);
+        }
+        else {
+          $('#send-btn').click();
+          $('#send-name').click();
+          return false;
+        }
       }
-      else {
-        $('#send-btn').click();
-        $('#send-name').click();
-        return false;
-      }
-    }
+    });
   });
 
   $('#send-btn').click(function() {
