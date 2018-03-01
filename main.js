@@ -164,6 +164,7 @@ io.on('connection', function(socket) {
         // check if there is only one player left at the table now
         if (players.length == 1) {
           state = 0;
+          count = 0;
           tableCards = [];
           socket.emit('score game', players);
           socket.broadcast.emit('score game', players);
@@ -210,11 +211,12 @@ io.on('connection', function(socket) {
     var flag = false;
     if (count >= players.length && players.length > 1) {
       flag = true;
-      currPlayer = dealer;
+      currPlayer = dealer+1;
+      if (currPlayer > players.length-1) {
+        currPlayer = 0;
+      }
       count = 0;
     }
-    // bump player
-    // currPlayer++;
     // check if player is at the end of the array
     if (currPlayer > players.length-1) {
       currPlayer = 0;
