@@ -82,12 +82,16 @@
         <div id="button-box">
           <div v-for="player in players">
             <div id="slider-row" class="row" v-if="player.id == id">
-              <p class="range-field col s3 push-s7">
-                <input type="range" id="setter-bet" min="table.bet" max="player.money"/>
+              <p class="range-field col s3 push-s7" v-if="player.money > bet">
+                <!-- FIXME min bet could be greater than the user's money... -->
+                <input type="range" id="bet-setter" :min="bet" :max="player.money" :value="bet" step="10"/>
               </p>
+              <p v-else class="red-text center">you must go all-in to play</p>
             </div>
           </div>
           <div class="row">
+            <!-- FIXME these buttons are not centered, going to worry about display issues later -->
+            <!-- for now working through the actual betting -->
             <button id="fold" class="btn-flat waves-effect red white-text col push-s1 s3">Fold</button>
             <button id="call" class="btn-flat waves-effect yellow black-text push-s1 col s3">Check/Call</button>
             <button id="bet" class="btn-flat waves-effect green white-text col push-s1 s3">Bet/Raise</button>

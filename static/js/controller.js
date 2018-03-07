@@ -79,9 +79,17 @@ $(function() {
 
   // handle bet button click
   $('#bet').click(function() {
-    // FIXME change second parameter to the new bet
+    // get bet
+    var bet = Number($('#bet-setter').val());
     // validate before emitting
-    socket.emit('player action', 2, appBody.bet+100);
+    // still need to check the currPlayer's bet, but this should
+    // be restricted in the input
+    // NOTE this is actually checked in main.js as well 
+    if (bet < appBody.bet) {
+      console.log('error: bet is invalid amount');
+      return;
+    }
+    socket.emit('player action', 2, bet);
   });
 
   // a lot of the communication is handled with these socket functions

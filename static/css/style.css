@@ -21,7 +21,7 @@ nav, .page-footer {
   background-color: #0a5994;
 }
 
-.button-box {
+#button-box {
   display: none;
 }
 
@@ -31,8 +31,8 @@ nav, .page-footer {
 }
 
 #fold, #call, #bet {
-  /* margin-left: 5px;
-  margin-right: 5px; */
+  margin-left: 5px;
+  margin-right: 5px;
 }
 
 nav h3 {
