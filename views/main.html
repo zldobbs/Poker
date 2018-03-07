@@ -79,10 +79,19 @@
       <!-- control box -->
       <div id="message-box" class="container">
         <!-- action buttons, add functionality -->
-        <div id="button-box" class="row">
-          <button id="fold" class="btn waves-effect red col push-s1 s3">Fold</button>
-          <button id="call" class="btn waves-effect yellow black-text push-s1 col s3">Check/Call</button>
-          <button id="bet" class="btn waves-effect green col push-s1 s3">Bet/Raise</button>
+        <div id="button-box">
+          <div v-for="player in players">
+            <div id="slider-row" class="row" v-if="player.id == id">
+              <p class="range-field col s3 push-s7">
+                <input type="range" id="setter-bet" min="table.bet" max="player.money"/>
+              </p>
+            </div>
+          </div>
+          <div class="row">
+            <button id="fold" class="btn-flat waves-effect red white-text col push-s1 s3">Fold</button>
+            <button id="call" class="btn-flat waves-effect yellow black-text push-s1 col s3">Check/Call</button>
+            <button id="bet" class="btn-flat waves-effect green white-text col push-s1 s3">Bet/Raise</button>
+          </div>
         </div>
         <!-- chat box -->
         <div class="row">

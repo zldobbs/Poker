@@ -21,9 +21,18 @@ nav, .page-footer {
   background-color: #0a5994;
 }
 
+.button-box {
+  display: none;
+}
+
+#slider-row, .range-field {
+  margin-bottom: 0;
+  padding-bottom: 0;
+}
+
 #fold, #call, #bet {
-  margin-left: 5px;
-  margin-right: 5px;
+  /* margin-left: 5px;
+  margin-right: 5px; */
 }
 
 nav h3 {
@@ -45,8 +54,7 @@ nav {
 }
 
 .table-row {
-  margin: 0 auto;
-  margin-top: 15px;
+  margin: 15px; auto;
   text-align: center;
   overflow: scroll;
 }
