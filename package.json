@@ -10,5 +10,8 @@
     "mocha": "^5.0.4",
     "socket.io": "^2.0.4",
     "vue": "^2.5.13"
+  },
+  "scripts": {
+    "test": "mocha"
   }
 }

@@ -1,4 +1,5 @@
 // test cases
+// to run tests, use `npm test`
 var assert = require('assert');
 describe('Game Flow', function() {
   // the player whose turn it is should always display controls
@@ -7,6 +8,6 @@ describe('Game Flow', function() {
     // setup the basic foundation, can definitely find other unit cases
 
     // will revisit soon
-    
+
   });
 });
