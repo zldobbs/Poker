@@ -20,5 +20,6 @@ Requires [Node.js](https://nodejs.org/)
 The current flow has a lot of bugs that need to be addressed. After developing a minimal viable product, I plan on looking into some of the following aspects of this project.
 * Implement more efficient error-checking/handling
 * Implement unit tests
+  * Testing is being built with [Mocha](https://mochajs.org)
 * Redesign architecture to remove global variables and improve encapsulation principles
-* Improve application security 
+* Improve application security
